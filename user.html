@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ghana University Lottery</title>
+    <style>
+        :root {
+            --primary: #FF5733;
+            --secondary: #2C3E50;
+            --light: #ECF0F1;
+            --dark: #2C3E50;
+            --success: #27AE60;
+            --danger: #E74C3C;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            color: var(--dark);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: var(--secondary);
+            color: white;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .logo {
+            font-size: 2rem;
+            font-weight: bold;
+        }
+        
+        .auth-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 50px;
+        }
+        
+        .auth-form {
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            width: 100%;
+            max-width: 500px;
+        }
+        
+        .form-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        
+        button:hover {
+            background-color: #E74C3C;
+        }
+        
+        .form-footer {
+            text-align: center;
+            margin-top: 20px;
+        }
+        
+        .form-link {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .form-link:hover {
+            text-decoration: underline;
+        }
+        
+        .dashboard {
+            display: none;
+        }
+        
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+        
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--secondary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+        
+        .balance-card {
+            background-color: var(--success);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .balance-amount {
+            font-size: 2rem;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .action-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.05);
+            margin-bottom: 30px;
+        }
+        
+        .action-title {
+            margin-bottom: 20px;
+            color: var(--secondary);
+        }
+        
+        .lottery-result {
+            text-align: center;
+            margin: 30px 0;
+        }
+        
+        .lottery-number {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary);
+            margin: 20px 0;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-item:last-child {
+            border-bottom: none;
+        }
+        
+        .prize-image {
+            width: 100%;
+            max-width: 400px;
+            border-radius: 8px;
+            margin-top: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .error-message {
+            color: var(--danger);
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        .success-message {
+            color: var(--success);
+            margin-top: 5px;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .auth-form {
+                padding: 20px;
+            }
+            
+            .user-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">Ghana University Lottery</div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <!-- Login Form -->
+        <div class="auth-container" id="loginContainer">
+            <div class="auth-form">
+                <h2 class="form-title">Login to Your Account</h2>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label for="loginPhone">MTN Mobile Number</label>
+                        <input type="tel" id="loginPhone" placeholder="e.g., 0244123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="loginPassword">Password</label>
+                        <input type="password" id="loginPassword" required>
+                    </div>
+                    <button type="submit">Login</button>
+                    <div class="form-footer">
+                        Don't have an account? <a href="#" class="form-link" id="showRegister">Register</a>
+                    </div>
+                    <div id="loginError" class="error-message hidden"></div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- Registration Form -->
+        <div class="auth-container hidden" id="registerContainer">
+            <div class="auth-form">
+                <h2 class="form-title">Create Account</h2>
+                <form id="registerForm">
+                    <div class="form-group">
+                        <label for="fullName">Full Name</label>
+                        <input type="text" id="fullName" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">MTN Mobile Money Number</label>
+                        <input type="tel" id="phone" placeholder="e.g., 0244123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="university">University</label>
+                        <select id="university" required>
+                            <option value="">Select University</option>
+                            <option value="ug">University of Ghana</option>
+                            <option value="knust">KNUST</option>
+                            <option value="ucc">University of Cape Coast</option>
+                            <option value="uew">University of Education, Winneba</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group hidden" id="otherUniContainer">
+                        <label for="otherUniversity">Specify University</label>
+                        <input type="text" id="otherUniversity">
+                    </div>
+                    <div class="form-group">
+                        <label for="program">Program</label>
+                        <select id="program" required>
+                            <option value="">Select Program</option>
+                            <option value="medicine">Medicine</option>
+                            <option value="engineering">Engineering</option>
+                            <option value="business">Business Administration</option>
+                            <option value="law">Law</option>
+                            <option value="arts">Arts & Humanities</option>
+                            <option value="science">Natural Sciences</option>
+                            <option value="social">Social Sciences</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" id="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" id="confirmPassword" required>
+                    </div>
+                    <button type="submit">Register</button>
+                    <div class="form-footer">
+                        Already have an account? <a href="#" class="form-link" id="showLogin">Login</a>
+                    </div>
+                    <div id="registerError" class="error-message hidden"></div>
+                    <div id="registerSuccess" class="success-message hidden"></div>
+                </form>
+            </div>
+        </div>
+        
+        <!-- User Dashboard -->
+        <div class="dashboard hidden" id="dashboard">
+            <div class="user-header">
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <div>
+                        <h2 id="welcomeMessage">Welcome, User</h2>
+                        <p id="userUniversity">University of Ghana</p>
+                    </div>
+                </div>
+                <button id="logoutBtn">Logout</button>
+            </div>
+            
+            <div class="balance-card">
+                <p>Your Account Balance</p>
+                <div class="balance-amount">GHS <span id="userBalance">0.00</span></div>
+            </div>
+            
+            <div class="action-card">
+                <h3 class="action-title">Buy Lottery Ticket</h3>
+                <p>Each ticket costs GHS 5.00 and gives you one 4-digit lottery number.</p>
+                <button id="buyTicketBtn">Generate Lottery Number</button>
+                <div class="lottery-result hidden" id="lotteryResult">
+                    <p>Your lottery number is:</p>
+                    <div class="lottery-number" id="lotteryNumber">1234</div>
+                    <p>Good luck! The draw will be held at the end of the month.</p>
+                </div>
+                <div id="purchaseError" class="error-message hidden"></div>
+            </div>
+            
+            <div class="action-card">
+                <h3 class="action-title">Deposit Funds</h3>
+                <p>Add money to your account using MTN Mobile Money</p>
+                <div class="form-group">
+                    <label for="depositAmount">Amount (GHS)</label>
+                    <input type="number" id="depositAmount" min="5" step="1" placeholder="Minimum GHS 5">
+                </div>
+                <button id="depositBtn">Deposit Now</button>
+                <div id="depositError" class="error-message hidden"></div>
+                <div id="depositSuccess" class="success-message hidden"></div>
+            </div>
+            
+            <div class="action-card">
+                <h3 class="action-title">Your Lottery Numbers</h3>
+                <div id="lotteryHistory">
+                    <p>You haven't purchased any lottery numbers yet.</p>
+                </div>
+            </div>
+            
+            <div class="action-card">
+                <h3 class="action-title">Current Prize</h3>
+                <p>This month's winner will receive:</p>
+                <img src="https://via.placeholder.com/400x300?text=Laptop+Prize" alt="Laptop Prize" class="prize-image">
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginContainer = document.getElementById('loginContainer');
+        const registerContainer = document.getElementById('registerContainer');
+        const dashboard = document.getElementById('dashboard');
+        const showRegister = document.getElementById('showRegister');
+        const showLogin = document.getElementById('showLogin');
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const universitySelect = document.getElementById('university');
+        const otherUniContainer = document.getElementById('otherUniContainer');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const buyTicketBtn = document.getElementById('buyTicketBtn');
+        const depositBtn = document.getElementById('depositBtn');
+        const lotteryResult = document.getElementById('lotteryResult');
+        const lotteryNumber = document.getElementById('lotteryNumber');
+        const userBalance = document.getElementById('userBalance');
+        const welcomeMessage = document.getElementById('welcomeMessage');
+        const userAvatar = document.getElementById('userAvatar');
+        const userUniversity = document.getElementById('userUniversity');
+        const lotteryHistory = document.getElementById('lotteryHistory');
+        const depositAmount = document.getElementById('depositAmount');
+
+        // Mock database (in a real app, this would be server-side)
+        let users = JSON.parse(localStorage.getItem('lotteryUsers')) || [];
+        let currentUser = null;
+        let lotteryNumbers = JSON.parse(localStorage.getItem('lotteryNumbers')) || {};
+
+        // Event Listeners
+        showRegister.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.remove('hidden');
+        });
+
+        showLogin.addEventListener('click', (e) => {
+            e.preventDefault();
+            registerContainer.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+        });
+
+        universitySelect.addEventListener('change', () => {
+            otherUniContainer.classList.toggle('hidden', universitySelect.value !== 'other');
+        });
+
+        loginForm.addEventListener('submit', handleLogin);
+        registerForm.addEventListener('submit', handleRegister);
+        logoutBtn.addEventListener('click', handleLogout);
+        buyTicketBtn.addEventListener('click', handleBuyTicket);
+        depositBtn.addEventListener('click', handleDeposit);
+
+        // Check if user is already logged in
+        checkAuth();
+
+        // Functions
+        function checkAuth() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                showDashboard();
+                updateUserInfo();
+                loadLotteryHistory();
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const phone = document.getElementById('loginPhone').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const errorElement = document.getElementById('loginError');
+            errorElement.classList.add('hidden');
+            
+            // Validate input
+            if (!phone || !password) {
+                showError(errorElement, 'Please fill in all fields');
+                return;
+            }
+            
+            // Find user
+            const user = users.find(u => u.phone === phone);
+            if (!user) {
+                showError(errorElement, 'User not found');
+                return;
+            }
+            
+            // Check password (in real app, this would be hashed)
+            if (user.password !== password) {
+                showError(errorElement, 'Incorrect password');
+                return;
+            }
+            
+            // Login successful
+            currentUser = user;
+            localStorage.setItem('loggedInUser', JSON.stringify(user));
+            showDashboard();
+            updateUserInfo();
+            loadLotteryHistory();
+        }
+
+        function handleRegister(e) {
+            e.preventDefault();
+            const fullName = document.getElementById('fullName').value;
+            const email = document.getElementById('email').value;
+            const phone = document.getElementById('phone').value;
+            const university = document.getElementById('university').value;
+            const otherUniversity = document.getElementById('otherUniversity').value;
+            const program = document.getElementById('program').value;
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            const errorElement = document.getElementById('registerError');
+            const successElement = document.getElementById('registerSuccess');
+            errorElement.classList.add('hidden');
+            successElement.classList.add('hidden');
+            
+            // Validate input
+            if (!fullName || !email || !phone || !university || !program || !password || !confirmPassword) {
+                showError(errorElement, 'Please fill in all required fields');
+                return;
+            }
+            
+            if (university === 'other' && !otherUniversity) {
+                showError(errorElement, 'Please specify your university');
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showError(errorElement, 'Passwords do not match');
+                return;
+            }
+            
+            if (password.length < 6) {
+                showError(errorElement, 'Password must be at least 6 characters');
+                return;
+            }
+            
+            // Check if user already exists
+            if (users.some(u => u.phone === phone)) {
+                showError(errorElement, 'User with this phone number already exists');
+                return;
+            }
+            
+            // Create new user
+            const newUser = {
+                id: Date.now().toString(),
+                fullName,
+                email,
+                phone,
+                university: university === 'other' ? otherUniversity : universitySelect.options[universitySelect.selectedIndex].text,
+                program,
+                password, // In real app, this would be hashed
+                balance: 0,
+                createdAt: new Date().toISOString()
+            };
+            
+            users.push(newUser);
+            localStorage.setItem('lotteryUsers', JSON.stringify(users));
+            
+            // Show success message
+            successElement.textContent = 'Registration successful! Please login.';
+            successElement.classList.remove('hidden');
+            
+            // Clear form
+            registerForm.reset();
+            
+            // Switch to login form after 2 seconds
+            setTimeout(() => {
+                registerContainer.classList.add('hidden');
+                loginContainer.classList.remove('hidden');
+                successElement.classList.add('hidden');
+            }, 2000);
+        }
+
+        function handleLogout() {
+            currentUser = null;
+            localStorage.removeItem('loggedInUser');
+            dashboard.classList.add('hidden');
+            loginContainer.classList.remove('hidden');
+            loginForm.reset();
+        }
+
+        function showDashboard() {
+            loginContainer.classList.add('hidden');
+            registerContainer.classList.add('hidden');
+            dashboard.classList.remove('hidden');
+        }
+
+        function updateUserInfo() {
+            if (!currentUser) return;
+            
+            welcomeMessage.textContent = `Welcome, ${currentUser.fullName.split(' ')[0]}`;
+            userUniversity.textContent = currentUser.university;
+            userBalance.textContent = currentUser.balance.toFixed(2);
+            userAvatar.textContent = currentUser.fullName.charAt(0).toUpperCase();
+        }
+
+        function generateLotteryNumber() {
+            // Generate random 4-digit number
+            const num = Math.floor(1000 + Math.random() * 9000);
+            return num.toString();
+        }
+
+        function handleBuyTicket() {
+            if (!currentUser) return;
+            
+            const errorElement = document.getElementById('purchaseError');
+            errorElement.classList.add('hidden');
+            
+            // Check balance
+            if (currentUser.balance < 5) {
+                showError(errorElement, 'Insufficient balance. Please deposit funds.');
+                return;
+            }
+            
+            // Generate lottery number
+            const number = generateLotteryNumber();
+            
+            // Deduct balance
+            currentUser.balance -= 5;
+            
+            // Save lottery number
+            if (!lotteryNumbers[currentUser.id]) {
+                lotteryNumbers[currentUser.id] = [];
+            }
+            
+            const lotteryEntry = {
+                number,
+                date: new Date().toISOString(),
+                won: false
+            };
+            
+            lotteryNumbers[currentUser.id].push(lotteryEntry);
+            
+            // Update storage
+            localStorage.setItem('lotteryNumbers', JSON.stringify(lotteryNumbers));
+            updateUserInStorage();
+            
+            // Display result
+            lotteryNumber.textContent = number;
+            lotteryResult.classList.remove('hidden');
+            
+            // Update UI
+            updateUserInfo();
+            loadLotteryHistory();
+        }
+
+        function handleDeposit() {
+            if (!currentUser) return;
+            
+            const amount = parseFloat(depositAmount.value);
+            const errorElement = document.getElementById('depositError');
+            const successElement = document.getElementById('depositSuccess');
+            errorElement.classList.add('hidden');
+            successElement.classList.add('hidden');
+            
+            // Validate amount
+            if (isNaN(amount) || amount < 5) {
+                showError(errorElement, 'Minimum deposit is GHS 5');
+                return;
+            }
+            
+            // In a real app, this would call the MTN Mobile Money API
+            // For this demo, we'll simulate a successful payment
+            simulateMomoPayment(amount, currentUser.phone)
+                .then(() => {
+                    // Payment successful
+                    currentUser.balance += amount;
+                    updateUserInStorage();
+                    updateUserInfo();
+                    
+                    // Show success message
+                    successElement.textContent = `Successfully deposited GHS ${amount.toFixed(2)}`;
+                    successElement.classList.remove('hidden');
+                    depositAmount.value = '';
+                    
+                    // Hide success message after 3 seconds
+                    setTimeout(() => {
+                        successElement.classList.add('hidden');
+                    }, 3000);
+                })
+                .catch(error => {
+                    showError(errorElement, error.message);
+                });
+        }
+
+        function simulateMomoPayment(amount, phone) {
+            return new Promise((resolve, reject) => {
+                // Simulate API call delay
+                setTimeout(() => {
+                    // Simulate random failures for demo purposes
+                    if (Math.random() < 0.1) { // 10% chance of failure
+                        reject(new Error('Payment failed. Please try again.'));
+                    } else {
+                        resolve({
+                            success: true,
+                            amount,
+                            transactionId: 'MOMO' + Date.now().toString(),
+                            phone
+                        });
+                    }
+                }, 1500);
+            });
+        }
+
+        function loadLotteryHistory() {
+            if (!currentUser || !lotteryNumbers[currentUser.id] || lotteryNumbers[currentUser.id].length === 0) {
+                lotteryHistory.innerHTML = '<p>You haven\'t purchased any lottery numbers yet.</p>';
+                return;
+            }
+            
+            const entries = lotteryNumbers[currentUser.id];
+            let html = '<div class="history-list">';
+            
+            entries.forEach(entry => {
+                const date = new Date(entry.date);
+                html += `
+                    <div class="history-item">
+                        <div>
+                            <strong>Number: ${entry.number}</strong>
+                            <div>${date.toLocaleDateString()}</div>
+                        </div>
+                        <div>${entry.won ? '🏆 Winner!' : 'Pending'}</div>
+                    </div>
+                `;
+            });
+            
+            html += '</div>';
+            lotteryHistory.innerHTML = html;
+        }
+
+        function updateUserInStorage() {
+            const index = users.findIndex(u => u.id === currentUser.id);
+            if (index !== -1) {
+                users[index] = currentUser;
+                localStorage.setItem('lotteryUsers', JSON.stringify(users));
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+            }
+        }
+
+        function showError(element, message) {
+            element.textContent = message;
+            element.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
